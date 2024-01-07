@@ -1,3 +1,4 @@
+
 # BME VIK Chatbot - RAG Project
 
 ## Introduction
@@ -10,13 +11,22 @@ This project is part of my diploma/thesis at BME VIK. The aim is to develop a ch
 - Other dependencies listed in `requirements.txt`
 
 ### Installation
-- To install the necessary libraries, please run the following command: `pip install -r requirements.txt`
-- This will install all the required packages to run the chatbot.
-- Additionally, run the setup script: `python setup.py install`
+To install the necessary libraries, please run the following command:
+```
+pip install -r requirements.txt
+```
+This will install all the required packages to run the chatbot.
 
+Additionally, run the setup script:
+```
+python setup.py install
+```
 
 ### Running the Application
-To start the chatbot, use the following command:`streamlit run chat.py`
+To start the chatbot, use the following command:
+```
+streamlit run chat.py
+```
 This will initiate the Streamlit server and the chatbot interface should be accessible through a web browser.
 
 ## Usage
@@ -27,8 +37,3 @@ Contributions to the project are welcome. Please ensure to follow the standard c
 
 ## License
 This project is licensed under the MIT License - see the LICENSE file for details.
-
-
-
-
-

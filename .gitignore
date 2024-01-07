@@ -1,0 +1,9 @@
+__pycache__
+.streamlit
+documents
+faiss_db
+test-data
+.env
+Pipfile
+Pipfile.lock
+experiments/cains-jawbone/data

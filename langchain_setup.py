@@ -2,8 +2,15 @@ import os
 from langchain import vectorstores, document_loaders, embeddings, chat_models, chains, prompts
 from langchain.schema import AIMessage, HumanMessage, SystemMessage
 
-# Set OpenAI API key
-OPENAI_API_KEY = "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"
+from dotenv import load_dotenv
+# Load environment variables from .env file
+load_dotenv()
+
+# Access the environment variable
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+if not OPENAI_API_KEY:
+    raise ValueError("OpenAI API key not found in environment variables")
+
 os.environ['OPENAI_API_KEY'] = OPENAI_API_KEY
 
 # Model names

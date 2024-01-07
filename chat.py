@@ -1,42 +1,46 @@
 import streamlit as st
 from qa import router
 import time
+import os
+
 
 st.title("VIK GPT")
 
-# Initialize session state variables
-def initialize_state(key, default):
-    if key not in st.session_state:
-        st.session_state[key] = default
+st.sidebar.title("Konfiguráció")
+uploaded_api_key = st.sidebar.text_input("Itt add hozzá az API kulcsod:", type="password")
 
-# initialize_state("presentation_index", 0)
-# initialize_state("openai_model", "gpt-4-32k")
-initialize_state("messages", [])
+# You can then use this API key in your application, 
+# for example, setting it as an environment variable or directly using it in functions
+if uploaded_api_key:
+    # Assuming you want to set it as an environment variable
+    os.environ['OPENAI_API_KEY'] = uploaded_api_key
 
-# Function to display chat messages
-def display_chat_messages(messages):
-    for message in messages:
-        with st.chat_message(message["role"]):
-            st.markdown(message["content"])
+if "messages" not in st.session_state:
+    st.session_state.messages = []
 
-display_chat_messages(st.session_state.messages)
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
 
-# Chat input handling
-if prompt := st.chat_input("What is up?"):
+if prompt := st.chat_input("Hány éves a BME?"):
     st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user"):
+        st.markdown(prompt)
     
-    assistant_response = router(history=st.session_state.messages, query=prompt)
+    with st.chat_message("assistant"):
 
-    # Function to simulate streaming of response
-    def simulate_response(response):
-        full_response = ""
         message_placeholder = st.empty()
-        for char in response:
+        # Call your custom function to get a response
+        assistant_response = router(history=st.session_state.messages, query=prompt,)
+        print(st.session_state.messages)
+        full_response = ""
+
+        for char in assistant_response:
             full_response += char
             time.sleep(0.03)  # Delay between each character
+            # Add a blinking cursor to simulate typing
             message_placeholder.markdown(full_response + "▌")
         message_placeholder.markdown(full_response)
-        return full_response
 
-    full_response = simulate_response(assistant_response)
-    st.session_state.messages.append({"role": "assistant", "content": full_response})
+        # Add assistant response to chat history
+        st.session_state.messages.append({"role": "assistant", "content": full_response})

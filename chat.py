@@ -2,6 +2,7 @@ import streamlit as st
 from qa import router
 import time
 import os
+from langchain_setup import reset_models
 
 
 st.title("VIK GPT")
@@ -13,7 +14,8 @@ uploaded_api_key = st.sidebar.text_input("Itt add hozzá az API kulcsod:", type=
 # for example, setting it as an environment variable or directly using it in functions
 if uploaded_api_key:
     # Assuming you want to set it as an environment variable
-    os.environ['OPENAI_API_KEY'] = uploaded_api_key
+    print(uploaded_api_key)
+    reset_models(uploaded_api_key)
 
 if "messages" not in st.session_state:
     st.session_state.messages = []

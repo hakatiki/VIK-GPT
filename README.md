@@ -21,6 +21,12 @@ Additionally, run the setup script:
 ```
 python setup.py install
 ```
+Finally add your OpenAI API key in the running application.
+Alternatively make run the following command with your API key inserted:
+```
+echo OPENAI_API_KEY=<your_api_key> > .env
+```
+
 
 ### Running the Application
 To start the chatbot, use the following command:

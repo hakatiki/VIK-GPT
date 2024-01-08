@@ -4,16 +4,19 @@ from langchain.schema import AIMessage, HumanMessage, SystemMessage
 
 from dotenv import load_dotenv
 # Load environment variables from .env file
-load_dotenv()
+load_dotenv(override=True)
+
 
 # Access the environment variable
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+print(OPENAI_API_KEY)
 if not OPENAI_API_KEY:
     raise ValueError("OpenAI API key not found in environment variables")
 
 os.environ['OPENAI_API_KEY'] = OPENAI_API_KEY
-
+# os.environ['OPENAI_API_KEY'] ="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"
 # Model names
+
 model_name = 'text-embedding-ada-002'
 gpt3_model_name = 'gpt-3.5-turbo-1106'
 gpt4_model_name = 'gpt-4'
@@ -25,6 +28,13 @@ print('LLM is loading...')
 # Loading language models
 llm_gpt3 = chat_models.ChatOpenAI(model_name=gpt3_model_name, temperature=0.0)
 llm_gpt4 = chat_models.ChatOpenAI(model_name=gpt4_model_name, temperature=0.0)
+
+
+def reset_models(key):
+    os.environ['OPENAI_API_KEY'] = key
+    global llm_gpt3, llm_gpt4
+    llm_gpt3 = chat_models.ChatOpenAI(model_name=gpt3_model_name, temperature=0.0)
+    llm_gpt4 = chat_models.ChatOpenAI(model_name=gpt4_model_name, temperature=0.0)
 
 # Loading vectorstores
 print('Vectorstores are loading...')

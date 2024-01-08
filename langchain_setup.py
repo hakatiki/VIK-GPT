@@ -14,7 +14,6 @@ if not OPENAI_API_KEY:
     raise ValueError("OpenAI API key not found in environment variables")
 
 os.environ['OPENAI_API_KEY'] = OPENAI_API_KEY
-# os.environ['OPENAI_API_KEY'] ="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"
 # Model names
 
 model_name = 'text-embedding-ada-002'

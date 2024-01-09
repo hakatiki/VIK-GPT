@@ -7,3 +7,4 @@ test-data
 Pipfile
 Pipfile.lock
 experiments/cains-jawbone/data
+conversations

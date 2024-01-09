@@ -1,24 +1,33 @@
 import streamlit as st
 from qa import router
 import time
+import json
 import os
+from datetime import datetime
 from langchain_setup import reset_models
 
+
+def save_conversation():
+    conversation_json = json.dumps(st.session_state.messages)
+    timestamp = st.session_state.history_id
+    filename = f"conversation_{timestamp}.json"
+    os.makedirs('conversations', exist_ok=True)
+    with open(os.path.join('conversations', filename), 'w', encoding='utf-8') as file:
+        file.write(conversation_json)
 
 st.title("VIK GPT")
 
 st.sidebar.title("Konfiguráció")
 uploaded_api_key = st.sidebar.text_input("Itt add hozzá az API kulcsod:", type="password")
 
-# You can then use this API key in your application, 
-# for example, setting it as an environment variable or directly using it in functions
 if uploaded_api_key:
-    # Assuming you want to set it as an environment variable
     print(uploaded_api_key)
     reset_models(uploaded_api_key)
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
+if "history_id" not in st.session_state:
+    st.session_state.history_id = datetime.now().strftime("%Y%m%d%H%M%S")
 
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
@@ -26,6 +35,7 @@ for message in st.session_state.messages:
 
 if prompt := st.chat_input("Hány éves a BME?"):
     st.session_state.messages.append({"role": "user", "content": prompt})
+    save_conversation()
     with st.chat_message("user"):
         st.markdown(prompt)
     
@@ -46,3 +56,5 @@ if prompt := st.chat_input("Hány éves a BME?"):
 
         # Add assistant response to chat history
         st.session_state.messages.append({"role": "assistant", "content": full_response})
+        save_conversation()
+

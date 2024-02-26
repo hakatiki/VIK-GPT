@@ -26,7 +26,17 @@ Alternatively make run the following command with your API key inserted:
 ```
 echo OPENAI_API_KEY=<your_api_key> > .env
 ```
+### Installation with Docker
+```
+docker build -t my-jupyter-app .
+```
 
+```1
+docker run --name my_jupyter_container -p 8888:8888 my-jupyter-app 
+```
+```
+docker start -a my_jupyter_container
+```
 
 ### Running the Application
 To start the chatbot, use the following command:

@@ -1,0 +1,27 @@
+version: '3.8'
+services:
+  solr:
+    image: solr:latest
+    ports:
+      - "8983:8983"
+    volumes:
+      - "C:/Users/takat/OneDrive/Documents/Egyetem/Diploma/solr_data:/var/solr"
+    networks:
+      - app-network
+
+  streamlit:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8501:8501"
+    depends_on:
+      - solr
+    networks:
+      - app-network
+    environment:
+      - SOLR_URL=http://solr:8983/solr
+
+networks:
+  app-network:
+    driver: bridge

@@ -53,6 +53,9 @@ metadata_descriptions = {
     'tad_page': 'Ez a szöveg a BME VIK tárgyoldaláról van letöltve. A tárgyak típusának értelmezése: 4/2/0/v ' +
                 '(előadás/gyakorlat/labor/vizsga) Vizsgával záruló tárgyak "v"-vel, félévközi tárgyak "f"-fel jelölve. ' + 
                 'Egy félévben 30 kredit teljesítése szükséges. Azonosítónak használd a tárgy címét és kódját.',
+    'vikwiki': 'Ez a szöveg a VIK wikipedia oldaláról származik, a hallgatók állították össze.' +
+                'Tartalma gyakran pontatlan, elavult vagy hibás lehet. ' + 
+                'Ha ilyen dokumentumot idézel mindenképp érdemes ezt kihangsúlyoznod.',
 }
 def reset_models(key):
     precomputed_hash = 'e27acbc27ea0fdc64e8648bd51d8f19bf271e1372889b506c28809211dfbd335'

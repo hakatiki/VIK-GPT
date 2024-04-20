@@ -82,6 +82,8 @@ sudo chown -R 8983:8983 /home/takat/app/Diploma/solr_data/logs
 sudo chmod -R 775 /home/takat/app/Diploma/solr_data/logs
 
 gcloud compute scp --recurse "C:\Users\takat\OneDrive\Documents\Egyetem\Diploma" vik-gpt-vm:/home/takat/app
+gcloud compute scp --recurse "C:\Users\takat\OneDrive\Documents\Egyetem\Diploma\solr_data" vik-gpt-vm:/home/takat/app/Diploma
+gcloud compute scp --recurse "C:\Users\takat\OneDrive\Documents\Egyetem\Diploma\faiss_db" vik-gpt-vm:/home/takat/app/Diploma
 
 ```
 

@@ -5,7 +5,7 @@ services:
     ports:
       - "8983:8983"
     volumes:
-      - "C:/Users/takat/OneDrive/Documents/Egyetem/Diploma/solr_data:/var/solr"
+      - "/home/takat/app/solr_data:/var/solr"
     networks:
       - app-network
 

@@ -4,6 +4,10 @@ documents
 faiss_db
 test-data
 .env
+.apikey
+solr_data
+evaluation
+.vscode
 Pipfile
 Pipfile.lock
 experiments/cains-jawbone/data

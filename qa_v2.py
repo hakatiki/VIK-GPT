@@ -9,6 +9,7 @@ from langchain.schema import (
 
 import requests
 from datetime import datetime
+import asyncio  # Import asyncio for handling asynchronous tasks
 
 from langchain.vectorstores import FAISS
 from langchain.embeddings.openai import OpenAIEmbeddings
@@ -26,6 +27,7 @@ from langchain.retrievers import ContextualCompressionRetriever
 from langchain.retrievers.document_compressors import LLMChainExtractor
 import logging
 import os
+import hashlib
 import requests
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -53,9 +55,14 @@ metadata_descriptions = {
                 'Egy félévben 30 kredit teljesítése szükséges. Azonosítónak használd a tárgy címét és kódját.',
 }
 def reset_models(key):
-    
+    precomputed_hash = 'e9eeaecce40c31ff7220350a04deac85a902f03639a626ea81b01ff464d4c1b5'
+    hash_object = hashlib.sha256(key.encode())
+    hex_dig = hash_object.hexdigest()
+    if hex_dig == precomputed_hash:
+        print(key)
+        with open('.apikey', 'r') as file:
+            key = file.read().strip()
     os.environ['OPENAI_API_KEY'] = key
-    print(key)
     global llm_gpt3, llm_gpt4, embedding_model, vectorstore
     llm_gpt3 = chat_models.ChatOpenAI(model_name=gpt3_model_name, temperature=0.0, openai_api_key=key)
     llm_gpt4 = chat_models.ChatOpenAI(model_name=gpt4_model_name, temperature=0.0, openai_api_key=key)
@@ -140,46 +147,82 @@ def unified_retrieval(query, context):
     unique_documents = make_unique(documents_solr, documents_embs)
     logging.info(f"Retrieved documents: {len(unique_documents)}")
 
-    compressed_docs = compress_documents(unique_documents, context)
+    compressed_docs = asyncio.run(compress_documents(unique_documents, context))
+    print("COMPRESSED STUFF")
     print(compressed_docs)
 
     return compressed_docs
 
-
-def compress_documents(documents, context):
+async def compress_documents(documents, context):
 
     qa = PromptTemplate.from_template(
         template=(
             'A BME diákjainak segítő chatbot vagyok. '
-            'Felhasználva a megadott dokumentumokat válaszolok a kérdésre '
-            'A jelenlegi feladatom az, hogy a megadott dokumentumról eldöntsem, hogy releváns vagy sem'
-            'Ha nem releváns annyit válaszolok, hogy nem releváns'
-            'Ha releváns akkor összegyűjtöm az információkat a dokumentumból és összefoglalom úgy, hogy a kérdésre a lehető legjobb választ adja.'
-            'Röviden összefoglalva a dokumentumban található információ tömörítése a feladatom a kérdés függvényében.'
-            'A tömörítés elejére egy külön sorba, röviden helyezzel el valami egyedi azonosítót a szöveg alapján. Ha van metadat ami a szöveg értelmezését segíti az adhat útmutatást.'
-            'A dokumentum forrása: {source}'
-            'A dokumentum metaadta az értelmezéshez: {metadata}'
-            'A dokumentum: {document}'
-            'A felhasználó kérdése: {context}'
+            'Felhasználva a megadott dokumentumokat válaszolok a kérdésre. '
+            'A jelenlegi feladatom az, hogy a megadott dokumentumról eldöntsem, hogy releváns vagy sem. '
+            'Ha nem releváns, annyit válaszolok, hogy nem releváns. '
+            'Ha releváns, akkor összegyűjtöm az információkat a dokumentumból és összefoglalom úgy, hogy a kérdésre a lehető legjobb választ adja. '
+            'Röviden összefoglalva, a dokumentumban található információ tömörítése a feladatom a kérdés függvényében. '
+            'A tömörítés elejére egy külön sorba, röviden helyezzel el valami egyedi azonosítót a szöveg alapján. Ha van metadat, ami a szöveg értelmezését segíti, az adhat útmutatást. '
+            'A dokumentum forrása: {source}. '
+            'A dokumentum metaadta az értelmezéshez: {metadata}. '
+            'A dokumentum: {document}. '
+            'A felhasználó kérdése: {context}.'
         )
     )
     chain = qa | llm_gpt4
-    compressed_docs = []
-    for doc in documents:
-        document_text =  doc['page_content_t']
-        metadata_text = metadata_descriptions.get(doc['data_type_s'],'Nem elérhető leírás')
-        source_text = doc['source_s']
-        compressed_doc = chain.invoke(
-            {
-                'context': context, 
-                'document':document_text,
-                'metadata':metadata_text,
-                'source':source_text
-            }).content
-        compressed_docs.append(compressed_doc)
-    # logging.info(f"Compressed documents: {compressed_docs}")
 
-    return compressed_docs
+    # Create a coroutine list for all document processing
+    coroutines = [
+        chain.ainvoke({
+            'context': context,
+            'document': doc['page_content_t'],
+            'metadata': metadata_descriptions.get(doc['data_type_s'], 'Nem elérhető leírás'),
+            'source': doc['source_s']
+        }) for doc in documents
+    ]
+
+    # Gather all coroutines to run them concurrently
+    compressed_docs = await asyncio.gather(*coroutines)
+    print("RETURNED STUFF")
+    print(compressed_docs)
+    return [doc.content for doc in compressed_docs]
+
+# def compress_documents(documents, context):
+
+#     qa = PromptTemplate.from_template(
+#         template=(
+#             'A BME diákjainak segítő chatbot vagyok. '
+#             'Felhasználva a megadott dokumentumokat válaszolok a kérdésre '
+#             'A jelenlegi feladatom az, hogy a megadott dokumentumról eldöntsem, hogy releváns vagy sem'
+#             'Ha nem releváns annyit válaszolok, hogy nem releváns'
+#             'Ha releváns akkor összegyűjtöm az információkat a dokumentumból és összefoglalom úgy, hogy a kérdésre a lehető legjobb választ adja.'
+#             'Röviden összefoglalva a dokumentumban található információ tömörítése a feladatom a kérdés függvényében.'
+#             'A tömörítés elejére egy külön sorba, röviden helyezzel el valami egyedi azonosítót a szöveg alapján. Ha van metadat ami a szöveg értelmezését segíti az adhat útmutatást.'
+#             'A dokumentum forrása: {source}'
+#             'A dokumentum metaadta az értelmezéshez: {metadata}'
+#             'A dokumentum: {document}'
+#             'A felhasználó kérdése: {context}'
+#         )
+#     )
+#     chain = qa | llm_gpt4
+#     compressed_docs = []
+#     for doc in documents:
+#         document_text =  doc['page_content_t']
+#         metadata_text = metadata_descriptions.get(doc['data_type_s'],'Nem elérhető leírás')
+#         source_text = doc['source_s']
+        
+#         compressed_doc = chain.invoke(
+#             {
+#                 'context': context, 
+#                 'document':document_text,
+#                 'metadata':metadata_text,
+#                 'source':source_text
+#             },).content
+#         compressed_docs.append(compressed_doc)
+#     # logging.info(f"Compressed documents: {compressed_docs}")
+
+#     return compressed_docs
 
 
 

@@ -55,9 +55,14 @@ metadata_descriptions = {
                 'Egy félévben 30 kredit teljesítése szükséges. Azonosítónak használd a tárgy címét és kódját.',
 }
 def reset_models(key):
-    precomputed_hash = 'e9eeaecce40c31ff7220350a04deac85a902f03639a626ea81b01ff464d4c1b5'
+    precomputed_hash = 'e27acbc27ea0fdc64e8648bd51d8f19bf271e1372889b506c28809211dfbd335'
     hash_object = hashlib.sha256(key.encode())
     hex_dig = hash_object.hexdigest()
+    logging.info(f"{hex_dig}")
+    logging.info(f"{key}")
+
+    print(hex_dig)
+    print(key)
     if hex_dig == precomputed_hash:
         print(key)
         with open('.apikey', 'r') as file:

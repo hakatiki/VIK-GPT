@@ -17,7 +17,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 
 
 
-def tvsz_pipeline(pdf_path, model_name, faiss_path, solr_url,create_embedding =True, upload_to_solr = True):
+def tvsz_pipeline(pdf_path, embeddings, faiss_path, solr_url,create_embedding =True, upload_to_solr = True):
     # Load environment variables
     load_dotenv()
     logging.info(f'Processing:  {pdf_path}')
@@ -75,7 +75,6 @@ def tvsz_pipeline(pdf_path, model_name, faiss_path, solr_url,create_embedding =T
                 return page-1
         return -1
     # Prepare embeddings
-    embeddings = OpenAIEmbeddings(model=model_name)
     # print(split_documents)
 
     logging.info(f'Creating FAISS ')

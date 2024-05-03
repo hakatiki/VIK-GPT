@@ -194,7 +194,7 @@ def upload_to_solr(solr_url, documents):
             logging.error(f'Error indexing document {doc["metadata"]["id"]}: {response.text}')
 
 
-def tad_pipeline(model_name, url, base_url, save_path, tad_faiss_path, solr_url,should_scrape, should_faiss, should_solr):
+def tad_pipeline(embeddings, url, base_url, save_path, tad_faiss_path, solr_url,should_scrape, should_faiss, should_solr):
     if should_scrape:
         courses = scrape_all_tad(url, base_url, save_path)
    
@@ -202,9 +202,7 @@ def tad_pipeline(model_name, url, base_url, save_path, tad_faiss_path, solr_url,
     with open(save_path, 'r') as file:
         courses = json.load(file)
     if should_faiss:
-        embeddings = OpenAIEmbeddings(
-            model=model_name,
-        )
+        
         upload_to_faiss(courses, embeddings, tad_faiss_path)
     if should_solr:
         upload_to_solr(solr_url, courses)

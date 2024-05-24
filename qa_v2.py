@@ -37,14 +37,15 @@ print(llm_gpt3)
 print(llm_gpt4)
 print('EMB:')
 print(embeddings)
-core_name = "/vik-gpt-core"
+core_name = "/vik-gpt-core-bench"
 
 
 # Get the Solr URL from environment variable
 solr_url_beginning = os.getenv('SOLR_URL', 'http://localhost:8983/solr')
 
 solr_url = f"{solr_url_beginning}{core_name}/select"
-
+SOLR_COUNT = 4
+EMBEDDING_COUNT = 4
 
 metadata_descriptions = {
     'tvsz_paragraph': 'Ez a szöveg a BME Tanulmányi és Vizsga szabályzatából származik. A szöveg paragrafusokra van ' +
@@ -115,7 +116,7 @@ def solr_retrieve(keywords):
         "defType": "edismax",
         "qf": "page_content_t",
         "wt": "json",
-        "rows": 4,
+        "rows": SOLR_COUNT,
     }
     response = requests.get(solr_url, params=params)
     if response.status_code == 200 and response.json()['response']['numFound'] > 0:
@@ -127,7 +128,7 @@ def get_solr_url():
     return solr_url
 
 def embedding_retrieve(query):
-    docs =  vectorstore.max_marginal_relevance_search(query=query, k=1, fetch_k=50)
+    docs =  vectorstore.max_marginal_relevance_search(query=query, k=EMBEDDING_COUNT, fetch_k=50)
     return [unify_metadata_embeddings(doc) for doc in docs]
 
 

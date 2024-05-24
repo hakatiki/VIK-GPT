@@ -24,7 +24,7 @@ os.environ['OPENAI_API_KEY'] = OPENAI_API_KEY
 # Model names
 
 embedding_model_name = 'text-embedding-ada-002'
-faiss_path = "./faiss_db/faiss-db-ada-002"
+faiss_path = "./faiss_db/faiss-db-bench"
 gpt3_model_name = 'gpt-3.5-turbo-1106'
 gpt4_model_name = 'gpt-4'
 
